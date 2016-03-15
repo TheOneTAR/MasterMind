@@ -20,5 +20,5 @@ from master_app import urls as master_urls
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^', include(master_urls))
+    url(r'^', include(master_urls)),
 ]

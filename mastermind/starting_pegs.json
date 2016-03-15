@@ -1,0 +1,58 @@
+[
+{
+  "model": "master_app.keypeg",
+  "pk": 3,
+  "fields": {
+    "color": 0
+  }
+},
+{
+  "model": "master_app.keypeg",
+  "pk": 4,
+  "fields": {
+    "color": 1
+  }
+},
+{
+  "model": "master_app.colorpeg",
+  "pk": 7,
+  "fields": {
+    "color": 0
+  }
+},
+{
+  "model": "master_app.colorpeg",
+  "pk": 8,
+  "fields": {
+    "color": 1
+  }
+},
+{
+  "model": "master_app.colorpeg",
+  "pk": 9,
+  "fields": {
+    "color": 2
+  }
+},
+{
+  "model": "master_app.colorpeg",
+  "pk": 10,
+  "fields": {
+    "color": 3
+  }
+},
+{
+  "model": "master_app.colorpeg",
+  "pk": 11,
+  "fields": {
+    "color": 4
+  }
+},
+{
+  "model": "master_app.colorpeg",
+  "pk": 12,
+  "fields": {
+    "color": 5
+  }
+}
+]

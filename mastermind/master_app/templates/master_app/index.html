@@ -3,6 +3,14 @@
    <body>
       <h1>Hello World</h1>
 
+      <form action='/newGame/' method='post'>
+         {% csrf_token %}
+         <label for="player_name">Your Name</label>
+         <input id='player_name' name='player_name' type='text'/>
+
+         <input type="submit" />
+      </form>
+
 
    </body>
 
