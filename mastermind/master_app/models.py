@@ -48,19 +48,6 @@ class ColorPeg(models.Model):
    def __str__(self):
       return self.Color[self.color][1]
 
-class Code(models.Model):
-   '''
-   A Mastermind's code.
-   '''
-   # The four slots of what the user is guessing
-   slot_1 = models.ForeignKey(ColorPeg, related_name='code_1')
-   slot_2 = models.ForeignKey(ColorPeg, related_name='code_2')
-   slot_3 = models.ForeignKey(ColorPeg, related_name='code_3')
-   slot_4 = models.ForeignKey(ColorPeg, related_name='code_4')
-
-   def __str__(self):
-      '''Represent the guess as the color pattern'''
-      return str(self.slot_1) + " " + str(self.slot_2) + " " + str(self.slot_3) + " " + str(self.slot_4)
 
 class GameManager(models.Manager):
    '''
@@ -92,6 +79,32 @@ class GameManager(models.Manager):
       code.save()
       return code
 
+class CodePeg(models.Model):
+   '''Table that establishes the code of the master per every game.'''
+
+   game_id = models.ForeignKey(Game)
+   color_id = models.ForeignKey(ColorPeg)
+   slot_num = PositiveSmallIntegerField()
+
+
+class GuessPeg(models.Model):
+   '''Table that establishes the guess of the user per every game.'''
+
+   game_id = models.ForeignKey(Game)
+   color_id = models.ForeignKey(ColorPeg)
+   slot_num = PositiveSmallIntegerField()
+
+
+class GameType(models.Model):
+   '''Allows there to be multiple types of games.
+      Kids game has 3 pegs,
+      Normal has 4, 
+      Hard has 5, etc.
+   '''
+
+   num_pegs = models.PositiveSmallIntegerField()
+   name = models.CharField(max_length=100)
+   description = models.TextField(max_length=600)
 
 class Game(models.Model):
    '''
@@ -109,7 +122,7 @@ class Game(models.Model):
 
    player_name = models.CharField(max_length=100)
    status = models.IntegerField(choices=Status, default=PLAYING)
-   code = models.ForeignKey(Code, null=True, blank=True)
+   code = models.ManyToManyField(ColorPeg, through='CodePeg')
 
    objects = GameManager()
 
@@ -125,16 +138,10 @@ class Guess(models.Model):
    with what number it is.
    '''
    # The four slots of what the user is guessing
-   slot_1 = models.ForeignKey(ColorPeg, related_name='slot_1')
-   slot_2 = models.ForeignKey(ColorPeg, related_name='slot_2')
-   slot_3 = models.ForeignKey(ColorPeg, related_name='slot_3')
-   slot_4 = models.ForeignKey(ColorPeg, related_name='slot_4')
+   slots = models.ManyToManyField(ColorPeg, through='GuessPeg')
 
    # Replies to the guess
-   key_1 = models.ForeignKey(KeyPeg, related_name='key_1', null=True, blank=True)
-   key_2 = models.ForeignKey(KeyPeg, related_name='key_2', null=True, blank=True)
-   key_3 = models.ForeignKey(KeyPeg, related_name='key_3', null=True, blank=True)
-   key_4 = models.ForeignKey(KeyPeg, related_name='key_4', null=True, blank=True)
+   keys = models.ManyToManyField(KeyPeg)
 
    # Which guess it is
    num = models.IntegerField()
