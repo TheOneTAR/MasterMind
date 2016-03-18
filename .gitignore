@@ -53,6 +53,7 @@ coverage.xml
 *.log
 db.sqlite3
 migrations/
+local_settings.py
 
 # Sphinx documentation
 docs/_build/
