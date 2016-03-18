@@ -1,0 +1,45 @@
+body {
+   margin: 0;
+   background-color: #BCB8B1;
+}
+
+main {
+   width: 70%;
+   margin: 20px auto;
+   border: 1px solid #ccc;
+   background-color: #fff;
+   border-radius: 5px;
+
+   padding: 15px;
+
+   box-shadow: 10px 10px 0px #463F3A;
+
+}
+
+h1 {
+   text-align: center;
+}
+
+.guesses {
+   width: 60%;
+   margin: 0 auto;
+   text-align: center;
+}
+
+.keys {
+   display: inline-block;
+   background-color: #000;
+}
+
+.peg {
+   width: 30px;
+   height: 30px;
+
+   margin: 0 5px;
+
+   display: inline-block;
+   border: 1px solid #999;
+   border-radius: 50%;
+   box-shadow: 2px 2px 1px #BCB8B1;
+
+}

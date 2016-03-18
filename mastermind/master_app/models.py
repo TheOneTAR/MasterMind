@@ -12,8 +12,8 @@ class KeyPeg(models.Model):
    WHITE = 1
 
    Color = (
-      (BLACK, 'Black'),
-      (WHITE, 'White')
+      (BLACK, 'black'),
+      (WHITE, 'white')
    )
 
    color = models.IntegerField(choices=Color, default=BLACK)
@@ -35,12 +35,12 @@ class ColorPeg(models.Model):
    YELLOW = 5
 
    Color = (
-      (BLUE, 'Blue'),
-      (WHITE, 'White'),
-      (RED, 'Red'),
-      (GREEN, 'Green'),
-      (BLACK, 'Black'),
-      (YELLOW, 'Yellow')
+      (BLUE, 'blue'),
+      (WHITE, 'white'),
+      (RED, 'red'),
+      (GREEN, 'green'),
+      (BLACK, 'black'),
+      (YELLOW, 'yellow')
    )
 
    color = models.IntegerField(choices=Color, default=BLUE)
@@ -143,13 +143,11 @@ class Guess(models.Model):
    game_id = models.ForeignKey(Game)
 
    def __str__(self):
-      '''Represent the guess as the color pattern'''
-      return str(self.slot_1) + " " + str(self.slot_2) + " " + str(self.slot_3) + " " + str(self.slot_4)
-
+      return "Guess for Game " + str(self.game_id.pk)
 
 class GuessPeg(models.Model):
    '''Table that establishes the guess of the user per every game.'''
 
-   game_id = models.ForeignKey(Guess)
+   guess = models.ForeignKey(Guess)
    color_id = models.ForeignKey(ColorPeg)
    slot_num = models.PositiveSmallIntegerField()

@@ -54,5 +54,35 @@
   "fields": {
     "color": 5
   }
+},
+{
+  "model": "master_app.gametype",
+  "pk": 1,
+  "fields": {
+    "num_pegs": 4,
+    "num_colors": 6,
+    "name": "Normal",
+    "description": "A classic game of Mastermind."
+  }
+},
+{
+  "model": "master_app.gametype",
+  "pk": 2,
+  "fields": {
+    "num_pegs": 3,
+    "num_colors": 5,
+    "name": "Children",
+    "description": "A slightly easier version of the classic Mastermind game."
+  }
+},
+{
+  "model": "master_app.gametype",
+  "pk": 3,
+  "fields": {
+    "num_pegs": 5,
+    "num_colors": 8,
+    "name": "Difficult",
+    "description": "A slightly more challenging version of the classic Mastermind."
+  }
 }
 ]

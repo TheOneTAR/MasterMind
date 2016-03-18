@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
+from django.core.exceptions import ObjectDoesNotExist
+
 from .models import *
 from .forms import * 
 
@@ -30,4 +32,41 @@ def create_new_game(request):
 
 def game(request, game_id):
 
-   return render(request, 'master_app/game.html', {'id':game_id})
+   game = Game.objects.get(pk=game_id)
+
+   colors = ColorPeg.Color
+   key_color = KeyPeg.Color
+
+   code = []
+
+   for peg in game.code.all():
+      code.append(colors[peg.color][1])
+
+   # Get the guesses assoicated with a game
+   #  Setup the guess pegs and keypegs for each guess
+   try: 
+      db_guesses = Guess.objects.filter(game_id=game)
+      print(db_guesses)
+      guesses = []
+
+      for guess in db_guesses:
+         print(guess)
+         pegs = []
+         keys = []
+         for peg in guess.slots.all():
+            print(peg)
+            pegs.append(colors[peg.color][1])
+
+         for key in guess.keys.all():
+            keys.append(key_color[key.color][1])
+
+         guesses.append({'keys': keys, 'pegs':pegs})
+   except ObjectDoesNotExist:
+      guesses = []
+
+   return render(request, 'master_app/game.html', {'game': game, 'code':code, 'guesses': guesses})
+
+
+
+
+

@@ -1,1 +1,40 @@
-{{ id }}
+{% extends 'master_app/base.html' %}
+
+{% block content %}
+<h1>{{ game.player_name }}'s Game</h1>
+
+
+<div class="guesses">
+   <h3>Previous Guesses</h3>
+   {% for guess in guesses %}
+      <div class="guess">
+         <!-- Guess pegs -->
+         {% for peg in guess.pegs %}
+            <div class="peg" style="background-color:{{ peg }}"></div>
+         {% endfor %}
+
+         <div class="keys">
+            <!-- Key pegs -->
+            {% for keypeg in guess.keys %}
+               <div class="peg" style="background-color:{{ keypeg }}"></div>
+            {% endfor %}
+         </div> 
+
+      </div>
+   {% endfor %}
+
+   <!-- All the previous guesses -->
+
+   <h3>Master Code</h3>
+   {% for peg in code %}
+      <div class="peg" style="background-color:{{ peg }}"></div>
+   {% endfor %}
+
+
+</div>
+
+<h3>Make a Guess</h3>
+This is where the form for making a new guess goes.
+Colors need to be limited to the number of colors in the game. Is the slicing consistant?
+
+{% endblock %}
