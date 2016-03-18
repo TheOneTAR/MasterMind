@@ -7,7 +7,13 @@
          {% csrf_token %}
          <label for="player_name">Your Name</label>
          <input id='player_name' name='player_name' type='text'/>
-
+         <br/><br/>
+         <select id='game_type' name='game_type'>
+            {% for t in types %}
+               <option value='{{ t.pk }}'>{{ t.name }}</option>
+            {% endfor %}
+         </select>
+         <br/><br/>
          <input type="submit" />
       </form>
 

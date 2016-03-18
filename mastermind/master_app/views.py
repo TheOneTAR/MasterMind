@@ -8,7 +8,9 @@ from .forms import *
 def landing_page(request):
    '''Landing page VC for the Mastermind app game.'''
 
-   return render(request, 'master_app/index.html')
+   types = GameType.objects.all()
+
+   return render(request, 'master_app/index.html', {'types':types})
 
 def create_new_game(request):
 
@@ -17,9 +19,10 @@ def create_new_game(request):
       if form.is_valid():
 
          name = form.cleaned_data['player_name']
+         game_type = form.cleaned_data['game_type']
 
          # To test things, make a new game
-         game = Game.objects.create_game(name)
+         game = Game.objects.create_game(name, game_type)
 
          return HttpResponseRedirect('/game/' + str(game.id))
 

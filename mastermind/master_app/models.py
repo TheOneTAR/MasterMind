@@ -49,52 +49,6 @@ class ColorPeg(models.Model):
       return self.Color[self.color][1]
 
 
-class GameManager(models.Manager):
-   '''
-   Manager for the Game object. Generates the secret code,
-   and allows passing in of the player's name on creation.
-   '''
-
-   def create_game(self, name):
-      '''
-      Create a game with a new code and given player name.
-      Call by using 'Book.objects.create_game(player_name)'
-      '''
-
-      code = self.generate_code()
-      game = self.create(player_name=name, code=code)
-
-      return game
-
-   def generate_code(self):
-      '''
-      Randomly generate a 4 ColorPeg code and return it.
-      '''
-      code = Code()
-      code.slot_1 = random.choice(ColorPeg.objects.all())
-      code.slot_2 = random.choice(ColorPeg.objects.all())
-      code.slot_3 = random.choice(ColorPeg.objects.all())
-      code.slot_4 = random.choice(ColorPeg.objects.all())
-
-      code.save()
-      return code
-
-class CodePeg(models.Model):
-   '''Table that establishes the code of the master per every game.'''
-
-   game_id = models.ForeignKey(Game)
-   color_id = models.ForeignKey(ColorPeg)
-   slot_num = PositiveSmallIntegerField()
-
-
-class GuessPeg(models.Model):
-   '''Table that establishes the guess of the user per every game.'''
-
-   game_id = models.ForeignKey(Game)
-   color_id = models.ForeignKey(ColorPeg)
-   slot_num = PositiveSmallIntegerField()
-
-
 class GameType(models.Model):
    '''Allows there to be multiple types of games.
       Kids game has 3 pegs,
@@ -103,8 +57,39 @@ class GameType(models.Model):
    '''
 
    num_pegs = models.PositiveSmallIntegerField()
+   num_colors = models.PositiveSmallIntegerField(default=6)
    name = models.CharField(max_length=100)
    description = models.TextField(max_length=600)
+
+   def __str__(self):
+      return self.name
+
+
+class GameManager(models.Manager):
+   '''
+   Manager for the Game object. Generates the secret code,
+   and allows passing in of the player's name on creation.
+   '''
+
+   def create_game(self, name, game_type):
+      '''
+      Create a game with a new code and given player name.
+      Call by using 'Book.objects.create_game(player_name)'
+      '''
+
+      game = self.create(player_name=name, game_type=game_type)
+
+      num = game_type.num_pegs
+      color_num = game_type.num_colors
+
+      # Loop through and randomly generate a code of num_pages length
+      for i in range(1, num+1):
+         color = random.choice(ColorPeg.objects.all()[:color_num])
+         CodePeg.objects.create(color=color, game=game, slot_num=i)
+
+      return game
+
+      
 
 class Game(models.Model):
    '''
@@ -123,6 +108,7 @@ class Game(models.Model):
    player_name = models.CharField(max_length=100)
    status = models.IntegerField(choices=Status, default=PLAYING)
    code = models.ManyToManyField(ColorPeg, through='CodePeg')
+   game_type = models.ForeignKey(GameType) 
 
    objects = GameManager()
 
@@ -131,6 +117,13 @@ class Game(models.Model):
 
    def status_str(self):
       return self.Status[self.status][1]
+
+class CodePeg(models.Model):
+   '''Table that establishes the code of the master per every game.'''
+
+   game = models.ForeignKey(Game)
+   color = models.ForeignKey(ColorPeg)
+   slot_num = models.PositiveSmallIntegerField()
 
 class Guess(models.Model):
    '''
@@ -153,3 +146,10 @@ class Guess(models.Model):
       '''Represent the guess as the color pattern'''
       return str(self.slot_1) + " " + str(self.slot_2) + " " + str(self.slot_3) + " " + str(self.slot_4)
 
+
+class GuessPeg(models.Model):
+   '''Table that establishes the guess of the user per every game.'''
+
+   game_id = models.ForeignKey(Guess)
+   color_id = models.ForeignKey(ColorPeg)
+   slot_num = models.PositiveSmallIntegerField()
