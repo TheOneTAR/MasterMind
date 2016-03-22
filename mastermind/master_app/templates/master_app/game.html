@@ -1,16 +1,23 @@
 {% extends 'master_app/base.html' %}
-
+{% load staticfiles %}
 {% block content %}
-<h1>{{ game.player_name }}'s Game</h1>
+<h1>{{ game }}</h1>
 
 
 <div class="guesses">
+
+   <h3>Master Code</h3>
+   {% for peg in code %}
+      <div class="peg" style="background-color:{{ peg }}"></div>
+   {% endfor %}
+
+   <!-- All the previous guesses -->
    <h3>Previous Guesses</h3>
    {% for guess in guesses %}
       <div class="guess">
          <!-- Guess pegs -->
          {% for peg in guess.pegs %}
-            <div class="peg" style="background-color:{{ peg }}"></div>
+            <div class="peg" style="background-color:{{ peg.color }}">{{ peg.num }}</div>
          {% endfor %}
 
          <div class="keys">
@@ -23,18 +30,28 @@
       </div>
    {% endfor %}
 
-   <!-- All the previous guesses -->
-
-   <h3>Master Code</h3>
-   {% for peg in code %}
-      <div class="peg" style="background-color:{{ peg }}"></div>
-   {% endfor %}
-
 
 </div>
 
-<h3>Make a Guess</h3>
-This is where the form for making a new guess goes.
-Colors need to be limited to the number of colors in the game. Is the slicing consistant?
+<div class="new-guess">
+   <h3>Make a Guess</h3>
 
+   <!-- Form with the four peg color guesses -->
+   <form method='post' id="new-guess">
+         {% csrf_token %}
+         <input type="hidden" name="game" value="{{game.pk}}">
+         <input type="hidden" id="guess_num" name="guess" value="{{curr_guess}}">
+         {% for slot in num_slots %}
+            <select id='slot_{{slot}}' name='{{slot}}'>
+               {% for c in colors %}
+                  <option value='{{ c.pk }}'>{{ c.name }}</option>
+               {% endfor %}
+            </select>
+         {% endfor %}
+         <input type="submit" />
+      </form>
+
+</div>
+
+<script src="{% static 'master_app/submitGuess.js' %}"></script>
 {% endblock %}

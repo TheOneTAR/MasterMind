@@ -17,6 +17,7 @@ class KeyPeg(models.Model):
    )
 
    color = models.IntegerField(choices=Color, default=BLACK)
+   guess_id = models.ForeignKey('Guess')
 
    def __str__(self):
       return self.Color[self.color][1]
@@ -33,6 +34,7 @@ class ColorPeg(models.Model):
    GREEN = 3
    BLACK = 4
    YELLOW = 5
+   PURPLE = 6
 
    Color = (
       (BLUE, 'blue'),
@@ -40,7 +42,8 @@ class ColorPeg(models.Model):
       (RED, 'red'),
       (GREEN, 'green'),
       (BLACK, 'black'),
-      (YELLOW, 'yellow')
+      (YELLOW, 'yellow'),
+      (PURPLE, 'purple')
    )
 
    color = models.IntegerField(choices=Color, default=BLUE)
@@ -125,16 +128,17 @@ class CodePeg(models.Model):
    color = models.ForeignKey(ColorPeg)
    slot_num = models.PositiveSmallIntegerField()
 
+   def __str__(self):
+      return "Game " + str(self.game.pk) + " Slot " + str(self.slot_num) + " Color " + str(self.color.pk)
+
 class Guess(models.Model):
    '''
    A Decoder's single Guess, associated with a game and 
    with what number it is.
    '''
    # The four slots of what the user is guessing
+   # Why do you even need this?
    slots = models.ManyToManyField(ColorPeg, through='GuessPeg')
-
-   # Replies to the guess
-   keys = models.ManyToManyField(KeyPeg)
 
    # Which guess it is
    num = models.IntegerField()
@@ -143,7 +147,7 @@ class Guess(models.Model):
    game_id = models.ForeignKey(Game)
 
    def __str__(self):
-      return "Guess for Game " + str(self.game_id.pk)
+      return "Guess " + str(self.num) + " for Game " + str(self.game_id.pk)
 
 class GuessPeg(models.Model):
    '''Table that establishes the guess of the user per every game.'''
@@ -151,3 +155,11 @@ class GuessPeg(models.Model):
    guess = models.ForeignKey(Guess)
    color_id = models.ForeignKey(ColorPeg)
    slot_num = models.PositiveSmallIntegerField()
+
+   class Meta:
+      ordering = ['slot_num']
+
+
+   def __str__(self):
+      return str(self.color_id) + " in slot " + str(self.slot_num)
+

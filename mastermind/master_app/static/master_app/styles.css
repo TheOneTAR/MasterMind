@@ -16,11 +16,11 @@ main {
 
 }
 
-h1 {
+h1, h2, h3 {
    text-align: center;
 }
 
-.guesses {
+.guesses, .new-guess {
    width: 60%;
    margin: 0 auto;
    text-align: center;
@@ -42,4 +42,10 @@ h1 {
    border-radius: 50%;
    box-shadow: 2px 2px 1px #BCB8B1;
 
+}
+
+.keys > .peg {
+   width: 20px;
+   height: 20px;
+   margin: 5px;
 }
