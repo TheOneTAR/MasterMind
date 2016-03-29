@@ -102,10 +102,12 @@ class Game(models.Model):
    # Status Consts
    GAME_OVER = 0
    PLAYING = 1
+   WINNER = 2
 
    Status = (
-      (GAME_OVER, 'Game Over'),
-      (PLAYING, 'In Progress')
+      (GAME_OVER, 'Game Over :('),
+      (PLAYING, 'In Progress'),
+      (WINNER, 'You Won!')
    )
 
    player_name = models.CharField(max_length=100)
@@ -116,7 +118,7 @@ class Game(models.Model):
    objects = GameManager()
 
    def __str__(self):
-      return self.player_name + "'s " + self.status_str() + " game"
+      return self.player_name + "'s game"
 
    def status_str(self):
       return self.Status[self.status][1]

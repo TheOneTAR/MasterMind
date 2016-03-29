@@ -6,6 +6,12 @@
 
 <div class="guesses">
 
+   {% if status.num != 1 %}
+      <h2>{{ status.text }}</h2>
+
+      <a href="{% url 'home' %}">Play again?</a>
+   {% endif %}
+
    <h3>Master Code</h3>
    {% for peg in code %}
       <div class="peg" style="background-color:{{ peg }}"></div>

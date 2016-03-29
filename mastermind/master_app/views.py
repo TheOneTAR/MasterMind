@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 
-import json
+import json, random
 
 from .models import *
 from .forms import * 
@@ -36,6 +36,10 @@ def game(request, game_id):
 
    game = Game.objects.get(pk=game_id)
 
+   # Get the game status
+   status = {'num': game.status, 'text': Game.Status[game.status][1]}
+   print(status)
+
    # Get the number of pegs in each guess
    num_slots = range(1, game.game_type.num_pegs+1)
 
@@ -45,12 +49,16 @@ def game(request, game_id):
    # Get the key color defaults
    key_color = KeyPeg.Color
 
-   # Get the master code.
-   # TODO: This isn't needed until the game is over.
+   # Init code array
    code = []
 
-   for peg in game.code.all():
-      code.append(ColorPeg.Color[peg.color][1])
+   # If the game status is not PLAYING,
+   # get the master code.
+   if game.status != Game.PLAYING:
+
+      for peg in game.code.all():
+         code.append(ColorPeg.Color[peg.color][1])
+
 
    # Get the guesses assoicated with a game
    #  Setup the guess pegs and keypegs for each guess
@@ -67,6 +75,7 @@ def game(request, game_id):
          for key in guess.keypeg_set.all():
             keys.append(key_color[key.color][1])
 
+         random.shuffle(keys)
          guesses.append({'keys': keys, 'pegs':pegs})
    except ObjectDoesNotExist:
       guesses = []
@@ -77,6 +86,7 @@ def game(request, game_id):
          {
             'game': game,
             'code':code,
+            'status': status,
             'guesses': guesses,
             'num_slots': num_slots,
             'colors': colors,
@@ -101,7 +111,6 @@ def get_colors(game):
 def submit_guess(request):
 
    if request.method == 'POST':
-      print('SUCCESS')
       json_data = request.POST.get('the_data')
       data = json.loads(json_data)
 
@@ -116,7 +125,9 @@ def submit_guess(request):
          code[peg.slot_num] = peg.color.pk
 
       # Get the guess number
+      # If this is the 10th Guess, evalutate it and then end game.
       guess_num = data[2]['value']
+
 
       # Make a new Guess
       guess = Guess(
@@ -144,11 +155,22 @@ def submit_guess(request):
          peg.save()
 
       # Evaluate if the guess is correct for this peg
-      eval_guess(code, guess_dict, len(data[3:]), guess)
+      won = eval_guess(code, guess_dict, len(data[3:]), guess)
+
+      # If they did win, update the game state
+      if won:
+         # Updating game state
+         game.status = Game.WINNER
+         game.save()
+      
+      # If this was the last guess, they lost
+      elif guess_num == 10:
+         game.status = Game.GAME_OVER
+         game.save()
 
 
-
-   return JsonResponse({'foo':'bar'})
+      # Then just return
+      return JsonResponse({})
 
 
 def eval_guess(code, guess, num_slots, guess_obj):
@@ -157,16 +179,26 @@ def eval_guess(code, guess, num_slots, guess_obj):
    # Using the algorithm that Ron and Sarah came up with,
    # but tweaked for my implentation
 
+   black_peg_count = 0
+
    # First look for exact matches
    for peg in range(1, num_slots+1):
+
       if code[peg] == guess[peg]:
          
          # Black peg!
+         black_peg_count += 1
+
          black_peg = KeyPeg(guess_id=guess_obj, color=KeyPeg.BLACK)
          black_peg.save()
 
          code[peg] = ""
          guess[peg] = ""
+
+      # See if they won!
+      if black_peg_count == num_slots:
+         # Return true that they won
+         return True
 
    # Then look for color matches
    for peg in range(1, num_slots+1):
@@ -182,7 +214,8 @@ def eval_guess(code, guess, num_slots, guess_obj):
                   code[in_peg] == ""
                   break
 
-
+   # If they have gotten this far, return false cause they didn't win
+   return False
 
 
 

@@ -23,8 +23,6 @@ function submitGuess(event) {
       data: {csrfmiddlewaretoken: guessData[0].value, the_data: JSON.stringify(guessData)},
 
       success: function(json) {
-         console.log(json);
-         console.log("Success!!");
          location.reload();
       },
       error: function(xhr, errmsg, err) {
